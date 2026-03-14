@@ -1,15 +1,39 @@
 import { Plugin } from "obsidian";
-import HabitController from "./habitController";
+import {DEFAULT_SETTINGS, MyPluginSettings} from "./settings";
+import PageController from "./pageController";
 
 export default class Main extends Plugin {
-    habitController: HabitController;
+    settings: MyPluginSettings;
+    pageController: PageController;
 
     async onload() {
-        this.habitController = new HabitController(this.app);
-        this.habitController.updateCurrentHabit();
+        await this.loadSettings();
+
+        this.pageController = new PageController(this.app);
+
+        this.updateRoutine();
+
+        this.registerEvent(
+            this.app.workspace.on("active-leaf-change", () => {
+                this.updateRoutine();
+            })
+        )
     }
 
     async onunload() {
         
     }
+
+    async updateRoutine() {
+        this.pageController.getCurrentPage();
+        this.pageController.updateCurrentPage();
+    }
+
+	async loadSettings() {
+		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData() as Partial<MyPluginSettings>);
+	}
+
+	async saveSettings() {
+		await this.saveData(this.settings);
+	}
 }
