@@ -1,28 +1,27 @@
-import { App, TFile } from "obsidian";
-import NF from "./pages/nf";
+import { App } from "obsidian";
+import NF_Handler from "./pages/nf";
 
 export default class PageController {
     app: App;
-    file: TFile | null;
-    currentPage: string;
+    NF_handler: NF_Handler;
 
-    NF_handler: NF;
-
-    constructor(app: App){
+    constructor(app: App) {
         this.app = app;
+        this.NF_handler = new NF_Handler();
     }
 
-    getCurrentPage() {
-        this.file = this.app.workspace.getActiveFile();
+    updateCurrentPage() {
+        const file = this.app.workspace.getActiveFile();
 
-        if(this.file)
-            this.currentPage = this.file.name;
+        if (!file) return;
 
-        return;
+        const currentPage = file.name;
+
+        if (this.is_NF_page(currentPage))
+            this.NF_handler.update(this.app, file);
     }
 
-    updateCurrentPage(){
-        if (this.currentPage.startsWith("NF"))
-            this.NF_handler.update();
+    is_NF_page(page: string) {
+        return page.startsWith("NF")
     }
 }

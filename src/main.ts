@@ -11,22 +11,17 @@ export default class Main extends Plugin {
 
         this.pageController = new PageController(this.app);
 
-        this.updateRoutine();
+        this.pageController.updateCurrentPage();
 
         this.registerEvent(
             this.app.workspace.on("active-leaf-change", () => {
-                this.updateRoutine();
+                this.pageController.updateCurrentPage();
             })
         )
     }
 
     async onunload() {
         
-    }
-
-    async updateRoutine() {
-        this.pageController.getCurrentPage();
-        this.pageController.updateCurrentPage();
     }
 
 	async loadSettings() {
