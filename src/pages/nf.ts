@@ -1,27 +1,37 @@
 import { App, TFile } from "obsidian";
 
 const DAY_INFOS = 4;
+const POSITIVE_VALUE = "Sim";
+const NEGATIVE_VALUE = "Não";
+
+const STREAK_TEXT = "- Dias sem:";
+const BEST_STREAK_TEXT = "- Maior sequência sem:";
+const SUCCESS_RATIO_TEXT = "- Taxa de sucesso:";
 
 type Stats = {
     yes: number;
     no: number;
     streak: number;
     bestStreak: number;
-    succesRatio: number;
+    successRatio: number;
 };
 
 export default class NF_Handler {
+    app: App;
     private year: [boolean, boolean, boolean, boolean][];
 
-    constructor() { }
+    constructor(app: App) {
+        this.app = app;
+        this.year = [];
+    }
 
-    async update(app: App, file: TFile) {
-        const content = await app.vault.read(file);
+    async update(file: TFile) {
+        const content = await this.app.vault.read(file);
         this.year = [];
 
         this.parseContent(content);
         const stats = this.computeStats();
-        this.updateStats(app, file, content, stats);
+        this.updateStats(file, content, stats);
     }
 
     private parseContent(content: string) {
@@ -38,9 +48,8 @@ export default class NF_Handler {
 
             const newDay = this.createDay();
 
-            for (let i = 0; i < DAY_INFOS; i++) {
-                newDay[i] = values[i] == "Sim" ? true : false;
-            }
+            for (let i = 0; i < DAY_INFOS; i++)
+                newDay[i] = values[i] == POSITIVE_VALUE ? true : false;
 
             this.year.push(newDay);
         }
@@ -60,7 +69,7 @@ export default class NF_Handler {
             no: 0,
             streak: 0,
             bestStreak: 0,
-            succesRatio: 0
+            successRatio: 0
         };
     }
 
@@ -81,20 +90,27 @@ export default class NF_Handler {
                 stats.bestStreak = stats.streak;
         }
 
-        stats.succesRatio = stats.no / (stats.yes + stats.no);
+        stats.successRatio = stats.no / (stats.yes + stats.no);
 
         return stats;
     }
 
-    async updateStats(app: App, file: TFile, content: string, stats: Stats) {
+    private async updateStats(file: TFile, content: string, stats: Stats) {
         const lines = content.split("\n");
 
-        lines[1] = `- Dias sem: ${stats.streak}`
-        lines[2] = `- Maior sequência sem: ${stats.bestStreak}`;
-        lines[3] = `- Taxa de sucesso: ${stats.succesRatio.toFixed(2)}`;
+        for (let [i, l] of lines.entries()) {
+            if (l.startsWith(STREAK_TEXT))
+                lines[i] = `${STREAK_TEXT} ${stats.streak}`;
+
+            else if (l.startsWith(BEST_STREAK_TEXT))
+                lines[i] = `${BEST_STREAK_TEXT} ${stats.bestStreak}`;
+
+            else if (l.startsWith(SUCCESS_RATIO_TEXT))
+                lines[i] = `${SUCCESS_RATIO_TEXT} ${stats.successRatio.toFixed(2)}`;
+        }
 
         const newContent = lines.join("\n");
 
-        await app.vault.modify(file, newContent);
+        await this.app.vault.modify(file, newContent);
     }
 }
