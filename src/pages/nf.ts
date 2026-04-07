@@ -1,12 +1,21 @@
 import { App, TFile } from "obsidian";
 
-const DAY_INFOS = 4;
-const POSITIVE_VALUE = "Sim";
-const NEGATIVE_VALUE = "Não";
+const CONFIG = {
+    DAY_INFOS: 4,
+    POSITIVE_VALUE: "Sim",
+    NEGATIVE_VALUE: "Não",
+} as const;
 
-const STREAK_TEXT = "- Dias sem:";
-const BEST_STREAK_TEXT = "- Maior sequência sem:";
-const SUCCESS_RATIO_TEXT = "- Taxa de sucesso:";
+const VALUES_REGEX = new RegExp(
+    `${CONFIG.POSITIVE_VALUE}|${CONFIG.NEGATIVE_VALUE}`,
+    "gi"
+);
+
+const TEXT = {
+    STREAK: "- Dias sem:",
+    BEST_STREAK: "- Maior sequência sem:",
+    SUCCESS_RATIO: "- Taxa de sucesso:",
+} as const;
 
 type Stats = {
     yes: number;
@@ -17,7 +26,7 @@ type Stats = {
 };
 
 export default class NF_Handler {
-    app: App;
+    private app: App;
     private year: [boolean, boolean, boolean, boolean][];
 
     constructor(app: App) {
@@ -39,17 +48,17 @@ export default class NF_Handler {
 
         for (const l of lines) {
             if (!this.isDay(l))
-                continue
+                continue;
 
-            const values = l.match(/Sim|Não/gi);
+            const values = l.match(VALUES_REGEX);
 
-            if (!values || values.length != DAY_INFOS)
+            if (!values || values.length != CONFIG.DAY_INFOS)
                 throw new Error(`Invalid day format: ${l}`);
 
             const newDay = this.createDay();
 
-            for (let i = 0; i < DAY_INFOS; i++)
-                newDay[i] = values[i] == POSITIVE_VALUE ? true : false;
+            for (let i = 0; i < CONFIG.DAY_INFOS; i++)
+                newDay[i] = values[i] == CONFIG.POSITIVE_VALUE ? true : false;
 
             this.year.push(newDay);
         }
@@ -99,14 +108,14 @@ export default class NF_Handler {
         const lines = content.split("\n");
 
         for (let [i, l] of lines.entries()) {
-            if (l.startsWith(STREAK_TEXT))
-                lines[i] = `${STREAK_TEXT} ${stats.streak}`;
+            if (l.startsWith(TEXT.STREAK))
+                lines[i] = `${TEXT.STREAK} ${stats.streak}`;
 
-            else if (l.startsWith(BEST_STREAK_TEXT))
-                lines[i] = `${BEST_STREAK_TEXT} ${stats.bestStreak}`;
+            else if (l.startsWith(TEXT.BEST_STREAK))
+                lines[i] = `${TEXT.BEST_STREAK} ${stats.bestStreak}`;
 
-            else if (l.startsWith(SUCCESS_RATIO_TEXT))
-                lines[i] = `${SUCCESS_RATIO_TEXT} ${stats.successRatio.toFixed(2)}`;
+            else if (l.startsWith(TEXT.SUCCESS_RATIO))
+                lines[i] = `${TEXT.SUCCESS_RATIO} ${stats.successRatio.toFixed(2)}`;
         }
 
         const newContent = lines.join("\n");

@@ -3,8 +3,8 @@ import {DEFAULT_SETTINGS, MyPluginSettings} from "./settings";
 import PageController from "./pageController";
 
 export default class Main extends Plugin {
-    settings: MyPluginSettings;
-    pageController: PageController;
+    settings!: MyPluginSettings;
+    pageController!: PageController;
 
     async onload() {
         await this.loadSettings();

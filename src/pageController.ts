@@ -3,9 +3,9 @@ import NF_Handler from "./pages/nf";
 import ToDo_Handler from "pages/todo";
 
 export default class PageController {
-    app: App;
-    NF_handler: NF_Handler;
-    ToDo_handler: ToDo_Handler;
+    private app: App;
+    private NF_handler: NF_Handler;
+    private ToDo_handler: ToDo_Handler;
 
     constructor(app: App) {
         this.app = app;
@@ -27,11 +27,11 @@ export default class PageController {
             this.ToDo_handler.update(file);
     }
 
-    is_NF_page(page: string) {
+    private is_NF_page(page: string) {
         return page.startsWith("NF");
     }
 
-    is_ToDo_page(page: string) {
+    private is_ToDo_page(page: string) {
         return page.startsWith("To-Do");
     }
 }
