@@ -40,7 +40,7 @@ export default class NF_Handler {
 
         this.parseContent(content);
         const stats = this.computeStats();
-        this.updateStats(file, content, stats);
+        this.updateContent(file, content, stats);
     }
 
     private parseContent(content: string) {
@@ -69,7 +69,7 @@ export default class NF_Handler {
     }
 
     private isDay(s: string) {
-        return s.match(/^\d/);
+        return /^\d/.test(s);
     }
 
     private createStats(): Stats {
@@ -104,7 +104,7 @@ export default class NF_Handler {
         return stats;
     }
 
-    private async updateStats(file: TFile, content: string, stats: Stats) {
+    private async updateContent(file: TFile, content: string, stats: Stats) {
         const lines = content.split("\n");
 
         for (let [i, l] of lines.entries()) {
