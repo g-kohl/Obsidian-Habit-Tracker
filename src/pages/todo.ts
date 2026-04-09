@@ -24,20 +24,22 @@ type List = {
 
 export default class ToDo_Handler {
     app: App;
-    private list: List
+    private list: List = {
+        today: [],
+        shortTerm: [],
+        mediumTerm: [],
+        longTerm: []
+    };
+
+    private currentDate: Date = new Date();
 
     constructor(app: App) {
         this.app = app;
-        this.list = {
-            today: [],
-            shortTerm: [],
-            mediumTerm: [],
-            longTerm: []
-        };
     }
 
     async update(file: TFile) {
         const content = await this.app.vault.read(file);
+        this.resetState();
 
         this.parseContent(content);
         this.updateContent(file);
@@ -56,14 +58,29 @@ export default class ToDo_Handler {
 
                 this.assignTerms(l, termDate);
             }
-            else {
+            else if(!this.isEmptyTask(l)) {
                 this.list.longTerm.push(l);
             }
         }
     }
 
+    private resetState(){
+        this.list = {
+            today: [],
+            shortTerm: [],
+            mediumTerm: [],
+            longTerm: []
+        };
+
+        this.currentDate = new Date();
+    }
+
     private isTask(s: string) {
         return s.startsWith("-");
+    }
+
+    private isEmptyTask(s: string) {
+        return s.startsWith(TEXT.EMPTY_TASK);
     }
 
     private hasTerm(task: string) {
@@ -91,8 +108,7 @@ export default class ToDo_Handler {
 
 
     private assignTerms(task: string, term: Date) {
-        const currentDate = new Date();
-        const difference = Math.ceil((term.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+        const difference = (term.getTime() - this.currentDate.getTime()) / (1000 * 60 * 60 * 24);
 
         if (difference < 0 && !this.isCompleted(task))
             this.list.today.push(task);
@@ -104,8 +120,6 @@ export default class ToDo_Handler {
             this.list.mediumTerm.push(task);
         else if (difference > CONFIG.MEDIUM_TERM)
             this.list.longTerm.push(task);
-        else
-            throw new Error(`Invalid date format: ${task}`);
     }
 
     private isCompleted(task: string) {
@@ -124,15 +138,14 @@ export default class ToDo_Handler {
     }
 
     private updateTerm(content: string, term_text: string, term_list: string[]){
-        console.log(content);
-        console.log(term_text, term_list);
-
-        content += `\n${term_text}`;
+        content += `${term_text}`;
 
         if (term_list.length == 0)
             content += `\n${TEXT.EMPTY_TASK}`;
         else for (const task of term_list)
             content += `\n${task}`;
+
+        content += "\n";
 
         return content;
     }
