@@ -15,7 +15,7 @@ const TEXT = {
     EMPTY_TASK: "- [ ] ."
 };
 
-type List = {
+type Tasks = {
     today: string[];
     shortTerm: string[];
     mediumTerm: string[];
@@ -24,7 +24,7 @@ type List = {
 
 export default class ToDo_Handler {
     app: App;
-    private list: List = {
+    private list: Tasks = {
         today: [],
         shortTerm: [],
         mediumTerm: [],
@@ -58,13 +58,13 @@ export default class ToDo_Handler {
 
                 this.assignTerms(l, termDate);
             }
-            else if(!this.isEmptyTask(l)) {
+            else if (!this.isEmptyTask(l)) {
                 this.list.longTerm.push(l);
             }
         }
     }
 
-    private resetState(){
+    private resetState() {
         this.list = {
             today: [],
             shortTerm: [],
@@ -88,20 +88,20 @@ export default class ToDo_Handler {
     }
 
     private getTerm(task: string) {
-        const term = task.match(/\d{2}/gi);
+        const match = task.match(/(\d{2})\/(\d{2})\/(\d{2})/);
         const intTerm: [number, number, number] = [0, 0, 0];
 
-        if (!term || term.length != CONFIG.DATE_INFOS)
+        if (!match)
             throw new Error(`Invalid date format: ${task}`);
 
-        for (let i = 0; i < CONFIG.DATE_INFOS; i++) {
-            const value = term[i];
+        const [__, day, month, year] = match;
 
-            if (value == undefined)
-                throw new Error(`Invalid date format: ${task}`);
+        if (!day || !month || !year)
+            throw new Error(`Invalid date format: ${task}`);
 
-            intTerm[i] = parseInt(value);
-        }
+        intTerm[0] = parseInt(day);
+        intTerm[1] = parseInt(month);
+        intTerm[2] = parseInt(year);
 
         return intTerm;
     }
@@ -110,16 +110,35 @@ export default class ToDo_Handler {
     private assignTerms(task: string, term: Date) {
         const difference = (term.getTime() - this.currentDate.getTime()) / (1000 * 60 * 60 * 24);
 
-        if (difference < 0 && !this.isCompleted(task))
+        if (difference > -1 && difference <= 0) {
             this.list.today.push(task);
-        else if (difference > 0 && difference <= CONFIG.TODAY_TERM)
+            return
+        }
+
+        if (difference < 0 && !this.isCompleted(task)) {
             this.list.today.push(task);
-        else if (difference > CONFIG.TODAY_TERM && difference <= CONFIG.SHORT_TERM)
+            return;
+        }
+
+        if (difference > 0 && difference <= CONFIG.TODAY_TERM) {
+            this.list.today.push(task);
+            return;
+        }
+
+        if (difference > CONFIG.TODAY_TERM && difference <= CONFIG.SHORT_TERM) {
             this.list.shortTerm.push(task);
-        else if (difference > CONFIG.SHORT_TERM && difference <= CONFIG.MEDIUM_TERM)
+            return;
+        }
+
+        if (difference > CONFIG.SHORT_TERM && difference <= CONFIG.MEDIUM_TERM) {
             this.list.mediumTerm.push(task);
-        else if (difference > CONFIG.MEDIUM_TERM)
+            return;
+        }
+
+        if (difference > CONFIG.MEDIUM_TERM) {
             this.list.longTerm.push(task);
+            return;
+        }
     }
 
     private isCompleted(task: string) {
@@ -137,7 +156,7 @@ export default class ToDo_Handler {
         await this.app.vault.modify(file, newContent);
     }
 
-    private updateTerm(content: string, term_text: string, term_list: string[]){
+    private updateTerm(content: string, term_text: string, term_list: string[]) {
         content += `${term_text}`;
 
         if (term_list.length == 0)

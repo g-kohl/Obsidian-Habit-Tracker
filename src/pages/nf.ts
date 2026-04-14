@@ -8,7 +8,7 @@ const CONFIG = {
 
 const VALUES_REGEX = new RegExp(
     `${CONFIG.POSITIVE_VALUE}|${CONFIG.NEGATIVE_VALUE}`,
-    "gi"
+    "g"
 );
 
 const TEXT = {
@@ -120,6 +120,7 @@ export default class NF_Handler {
 
         const newContent = lines.join("\n");
 
-        await this.app.vault.modify(file, newContent);
+        if (newContent !== content)
+            await this.app.vault.modify(file, newContent);
     }
 }
