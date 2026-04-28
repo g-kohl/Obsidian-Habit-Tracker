@@ -15,11 +15,13 @@ const TEXT = {
     STREAK: "- Dias sem:",
     BEST_STREAK: "- Maior sequência sem:",
     SUCCESS_RATIO: "- Taxa de sucesso:",
+    TOTAL: "- Total Não/Sim:",
 } as const;
 
 type Stats = {
     yes: number;
     no: number;
+
     streak: number;
     bestStreak: number;
     successRatio: number;
@@ -116,6 +118,9 @@ export default class NF_Handler {
 
             else if (l.startsWith(TEXT.SUCCESS_RATIO))
                 lines[i] = `${TEXT.SUCCESS_RATIO} ${stats.successRatio.toFixed(2)}`;
+
+            else if (l.startsWith(TEXT.TOTAL))
+                lines[i] = `${TEXT.TOTAL} ${stats.no}/${stats.yes}`;
         }
 
         const newContent = lines.join("\n");

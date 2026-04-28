@@ -22,6 +22,8 @@ npm run dev
 
 This way, you don't need to build every single time.
 
+To use the plugin, you only need the [main.js](/main.js) and [manifest.json](/manifest.json) files. Create a folder for them in the `.obsidian/plugins` folder and search for it inside Obsidian: Options > Community plugins > Installed plugins.
+
 # Features
 I'll probably update this project frequently to keep adding or updating features. Because of this, this README may not always be up to date. If a module is not documented in this README, it is probably not finished.
 
@@ -71,6 +73,8 @@ The architecture is pretty simple:
     - _update_: the function that will be called by the controller class.
     - _parseContent_: parses the content of the file so you can modify and extract information from it.
     - _updateContent_: writes the new content in the file.
+
+[default_module.ts](/src/pages/default_module.ts) can help you to create a new module.
 
 ## Language
 Since I write my Obsidian documents in Portuguese, the plugin also operates using this language. If you want to change it, all portugues texts are defined as constants in the beginning of the code, so it's easy to find and modify.
