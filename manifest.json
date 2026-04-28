@@ -1,7 +1,8 @@
 {
 	"id": "my-plugin",
 	"name": "My Plugin",
+	"version": "1.0.0",
 	"description": "My personal plugin. Highly customized to my goals.",
 	"author": "Guilherme Kohl",
-	"isDesktopOnly": false
+	"isDesktopOnly": true
 }

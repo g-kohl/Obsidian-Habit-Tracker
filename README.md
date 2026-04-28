@@ -1,90 +1,76 @@
-# Obsidian Sample Plugin
+# Project description
+This project is a Habit Tracker and To-Do List plugin for the notes app [Obsidian](https://obsidian.md/). It is **highly** customized for **my** goals and therefore is not available as a community plugin. Despite that, feel free to download this repository and use it as a source of inspiration for building your own plugin.
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+# Installation and building
+Before anything, make sure you have Node.js installed in your system. After downloading this repository, navigate to its folder and install the dependencies by running:
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
-
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open modal (simple)" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
-
-## First time developing plugins?
-
-Quick starting guide for new plugin devs:
-
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
-
-## Releasing new releases
-
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
-
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
-
-## Adding your plugin to the community plugin list
-
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
-
-## How to use
-
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
-
-## Manually installing the plugin
-
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- This project already has eslint preconfigured, you can invoke a check by running`npm run lint`
-- Together with a custom eslint [plugin](https://github.com/obsidianmd/eslint-plugin) for Obsidan specific code guidelines.
-- A GitHub action is preconfigured to automatically lint every commit on all branches.
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
+```
+npm install
 ```
 
-If you have multiple URLs, you can also do:
+To build the project, run:
 
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
+```
+npm run build
 ```
 
-## API Documentation
+When you are developing new features, it's interesting to run:
 
-See https://docs.obsidian.md
+```
+npm run dev
+```
+
+This way, you don't need to build every single time.
+
+# Features
+I'll probably update this project frequently to keep adding or updating features. Because of this, this README may not always be up to date. If a module is not documented in this README, it is probably not finished.
+
+Every feature is associated with habits from specific files. For example, for my reading habit I have a reading module that only makes changes in the file where I take notes for this specific habit.
+
+**Disclaimer:** in these files, I write in Portuguese and the plugin expects to find texts in this language. To explain the features I'll translate the texts to English. Check the [Developer notes](#developer-notes) if you want to change the texts.
+
+## To-Do List
+A file named "To-Do" will have four sections (in this project these texts are written in portuguese): 
+
+- "Today": tasks due today or tomorrow.
+- "Short term": tasks due within 2 days to 2 weeks.
+- "Medium term": tasks due within 2 weeks to 2 months.
+- "Long term": tasks due after 2 months or with no specific deadline.
+
+Write your taks as tasks lists with a date in the end of it, for example:
+
+`- [  ] my task description - 21/04/26`
+
+The plugin expects the date to be in the DD/MM/YY format.
+
+With that, the plugin will automatically sort them in the four sections mentioned before. This way, you can easily manage your tasks and their deadlines. Completed tasks are removed automatically if their deadline has already passed.
+
+## General habit tracker
+A file with the name starting with "NF" will count how many days were marked as "Yes" or "No" and exhibit statistics based on that. The meaning of 'NF' is personal and not relevant to the plugin logic, but you can use this module as a general habit tracker. The statistics are:
+
+- Success days
+- Best streak
+- Success/Failure ratio
+
+## Other modules...
+To add...
+
+# Developer notes
+
+Read this if you plan to modify, remove or add other modules, which I highly suggest because, as I mentioned, I designed this plugin to track my habits and goals and they may differ from yours.
+
+## Project architecture
+
+The architecture is pretty simple:
+
+- The `Main` class extends the `Plugin` class implemented by Obsidian. It checks whenever a file is opened and calls the `PageController` class to update it. "Ctrl + U" also forces the checking, so you don't need to leave and return to the current file.
+
+- The `PageController` class determines the currently open file and calls its responsible module.
+
+- Each module has a class where you should implement the following functions:
+    - _update_: the function that will be called by the controller class.
+    - _parseContent_: parses the content of the file so you can modify and extract information from it.
+    - _updateContent_: writes the new content in the file.
+
+## Language
+Since I write my Obsidian documents in Portuguese, the plugin also operates using this language. If you want to change it, all portugues texts are defined as constants in the beginning of the code, so it's easy to find and modify.
