@@ -54,6 +54,16 @@ A file with the name starting with "NF" will count how many days were marked as 
 - Best streak
 - Success/Failure ratio
 
+## Reading
+A file named "Leituras" will generate statistics based on the books you read. Take notes of the books following this structure:
+
+`"TITLE" (AUTHOR): STARTING_DATE - ENDING_DATE: PAGES páginas`
+
+The statistics are:
+- Total of pages
+- Pages per day on average
+- Pages per book on average
+
 ## Other modules...
 To add...
 
