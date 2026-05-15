@@ -63,9 +63,9 @@ export default class Reading_Handler {
         return !(/xx\/xx/.test(s));
     }
 
-    private parseBook (book: string): Book {
+    private parseBook(book: string): Book {
         const match = book.match(BOOK_REGEX);
-        
+
         if (!match) {
             throw new Error(`Invalid book format: ${book}`);
         }
@@ -73,7 +73,7 @@ export default class Reading_Handler {
         const [, title, autor, startDate, endDate, pages] = match;
 
         if (!title || !autor || !startDate || !endDate || !pages)
-            throw new Error(`Invalid dates or pages: ${book}`);
+            throw new Error(`Invalid book format: ${book}`);
 
         return {
             title,
@@ -88,13 +88,13 @@ export default class Reading_Handler {
         const parts = date.split("/").map(Number);
 
         if (parts.length !== 3 || parts.some(isNaN)) {
-            throw new Error(`Data inválida: "${date}"`);
+            throw new Error(`Invalid date: "${date}"`);
         }
 
         const [day, month, year] = parts as [number, number, number];
         return new Date(year, month - 1, day);
     }
-    
+
     private createStats(): Stats {
         return {
             days: 0,
@@ -114,7 +114,7 @@ export default class Reading_Handler {
         }
 
         const firstBook = this.books[0];
-        const lastBook = this.books[stats.books-1];
+        const lastBook = this.books[stats.books - 1];
 
         if (!firstBook || !lastBook)
             throw new Error("No books found");

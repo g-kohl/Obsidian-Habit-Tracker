@@ -1,18 +1,21 @@
 import { App } from "obsidian";
 import NF_Handler from "./pages/nf";
 import Reading_Handler from "pages/reading";
+import Running_Handler from "pages/running";
 import ToDo_Handler from "pages/todo";
 
 export default class PageController {
     private app: App;
     private NF_handler: NF_Handler;
     private Reading_handler: Reading_Handler;
+    private Running_handler: Running_Handler;
     private ToDo_handler: ToDo_Handler;
 
     constructor(app: App) {
         this.app = app;
         this.NF_handler = new NF_Handler(app);
         this.Reading_handler = new Reading_Handler(app);
+        this.Running_handler = new Running_Handler(app);
         this.ToDo_handler = new ToDo_Handler(app);
     }
 
@@ -29,6 +32,9 @@ export default class PageController {
         if (this.is_Reading_page(currentPage))
             this.Reading_handler.update(file);
 
+        if (this.is_Running_page(currentPage))
+            this.Running_handler.update(file);
+
         if (this.is_ToDo_page(currentPage))
             this.ToDo_handler.update(file);
     }
@@ -37,8 +43,12 @@ export default class PageController {
         return page.startsWith("NF");
     }
 
-    private is_Reading_page(page: string){
+    private is_Reading_page(page: string) {
         return page.startsWith("Leituras");
+    }
+
+    private is_Running_page(page: string) {
+        return page.startsWith("Corridas");
     }
 
     private is_ToDo_page(page: string) {
