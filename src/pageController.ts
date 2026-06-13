@@ -1,4 +1,5 @@
 import { App } from "obsidian";
+
 import NF_Handler from "./pages/nf";
 import Reading_Handler from "pages/reading";
 import Running_Handler from "pages/running";
@@ -6,6 +7,7 @@ import ToDo_Handler from "pages/todo";
 
 export default class PageController {
     private app: App;
+
     private NF_handler: NF_Handler;
     private Reading_handler: Reading_Handler;
     private Running_handler: Running_Handler;

@@ -26,12 +26,11 @@ type Stats = {
 };
 
 export default class Reading_Handler {
-    app: App;
-    books: Book[];
+    private app: App;
+    private books: Book[] = [];
 
     constructor(app: App) {
         this.app = app;
-        this.books = [];
     }
 
     async update(file: TFile) {
@@ -47,15 +46,15 @@ export default class Reading_Handler {
         const lines = content.split("\n");
 
         for (const l of lines) {
-            if (this.isBook(l) && this.isBookFinished(l)) {
-                const book = this.parseBook(l);
+            if (!this.isBook(l) || !this.isBookFinished(l))
+                continue;
 
-                this.books.push(book);
-            }
+            const book = this.parseBook(l);
+            this.books.push(book);
         }
     }
 
-    private isBook(s: string) {
+    private isBook(s: string): boolean {
         return /^\d/.test(s);
     }
 
@@ -66,9 +65,8 @@ export default class Reading_Handler {
     private parseBook(book: string): Book {
         const match = book.match(BOOK_REGEX);
 
-        if (!match) {
+        if (!match)
             throw new Error(`Invalid book format: ${book}`);
-        }
 
         const [, title, autor, startDate, endDate, pages] = match;
 
@@ -84,28 +82,18 @@ export default class Reading_Handler {
         };
     }
 
-    private parseDate(date: string) {
+    private parseDate(date: string): Date {
         const parts = date.split("/").map(Number);
 
-        if (parts.length !== 3 || parts.some(isNaN)) {
+        if (parts.length !== 3 || parts.some(isNaN))
             throw new Error(`Invalid date: "${date}"`);
-        }
 
         const [day, month, year] = parts as [number, number, number];
+
         return new Date(year, month - 1, day);
     }
 
-    private createStats(): Stats {
-        return {
-            days: 0,
-            books: 0,
-            pages: 0,
-            pagesPerDay: 0,
-            pagesPerBook: 0
-        };
-    }
-
-    private computeStats() {
+    private computeStats(): Stats {
         const stats: Stats = this.createStats();
 
         for (const b of this.books) {
@@ -124,6 +112,16 @@ export default class Reading_Handler {
         stats.pagesPerDay = stats.pages / stats.days;
 
         return stats;
+    }
+
+    private createStats(): Stats {
+        return {
+            days: 0,
+            books: 0,
+            pages: 0,
+            pagesPerDay: 0,
+            pagesPerBook: 0
+        };
     }
 
     private async updateContent(file: TFile, content: string, stats: Stats) {

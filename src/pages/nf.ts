@@ -6,7 +6,7 @@ const CONFIG = {
     NEGATIVE_VALUE: "Não",
 } as const;
 
-const VALUES_REGEX = new RegExp(
+const DAY_REGEX = new RegExp(
     `${CONFIG.POSITIVE_VALUE}|${CONFIG.NEGATIVE_VALUE}`,
     "g"
 );
@@ -17,6 +17,8 @@ const TEXT = {
     SUCCESS_RATIO: "- Taxa de sucesso:",
     TOTAL: "- Total Não/Sim:",
 } as const;
+
+type Day = [boolean, boolean, boolean, boolean];
 
 type Stats = {
     yes: number;
@@ -29,11 +31,10 @@ type Stats = {
 
 export default class NF_Handler {
     private app: App;
-    private year: [boolean, boolean, boolean, boolean][];
+    private year: Day[] = [];
 
     constructor(app: App) {
         this.app = app;
-        this.year = [];
     }
 
     async update(file: TFile) {
@@ -52,39 +53,30 @@ export default class NF_Handler {
             if (!this.isDay(l))
                 continue;
 
-            const values = l.match(VALUES_REGEX);
-
-            if (!values || values.length != CONFIG.DAY_INFOS)
-                throw new Error(`Invalid day format: ${l}`);
-
-            const newDay = this.createDay();
-
-            for (let i = 0; i < CONFIG.DAY_INFOS; i++)
-                newDay[i] = values[i] == CONFIG.POSITIVE_VALUE ? true : false;
-
-            this.year.push(newDay);
+            const day = this.parseDay(l);
+            this.year.push(day);
         }
     }
 
-    private createDay(): [boolean, boolean, boolean, boolean] {
-        return [false, false, false, false];
-    }
-
-    private isDay(s: string) {
+    private isDay(s: string): boolean {
         return /^\d/.test(s);
     }
 
-    private createStats(): Stats {
-        return {
-            yes: 0,
-            no: 0,
-            streak: 0,
-            bestStreak: 0,
-            successRatio: 0
-        };
+    private parseDay(day: string): Day {
+        const match = day.match(DAY_REGEX);
+
+        if (!match || match.length != CONFIG.DAY_INFOS)
+            throw new Error(`Invalid day format: ${day}`);
+
+        const newDay: Day = [false, false, false, false];
+
+        for (let i = 0; i < CONFIG.DAY_INFOS; i++)
+            newDay[i] = match[i] == CONFIG.POSITIVE_VALUE ? true : false;
+       
+        return newDay;
     }
 
-    private computeStats() {
+    private computeStats(): Stats {
         const stats: Stats = this.createStats();
 
         for (const d of this.year) {
@@ -104,6 +96,16 @@ export default class NF_Handler {
         stats.successRatio = stats.no / (stats.yes + stats.no);
 
         return stats;
+    }
+
+    private createStats(): Stats {
+        return {
+            yes: 0,
+            no: 0,
+            streak: 0,
+            bestStreak: 0,
+            successRatio: 0
+        };
     }
 
     private async updateContent(file: TFile, content: string, stats: Stats) {

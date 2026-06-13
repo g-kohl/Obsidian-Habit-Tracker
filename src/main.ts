@@ -2,11 +2,9 @@ import { Plugin } from "obsidian";
 import PageController from "./pageController";
 
 export default class Main extends Plugin {
-    pageController!: PageController;
+    pageController = new PageController(this.app);
 
     async onload() {
-        this.pageController = new PageController(this.app);
-
         this.pageController.updateCurrentPage();
 
         this.registerEvent(
@@ -31,6 +29,6 @@ export default class Main extends Plugin {
     }
 
     async onunload() {
-        
+
     }
 }

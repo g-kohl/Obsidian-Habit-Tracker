@@ -5,7 +5,7 @@ const CONFIG = {
     TODAY_TERM: 1,
     SHORT_TERM: 14,
     MEDIUM_TERM: 60
-};
+} as const;
 
 const TEXT = {
     TODAY_TERM: "# Hoje",
@@ -13,7 +13,7 @@ const TEXT = {
     MEDIUM_TERM: "# Médio prazo",
     LONG_TERM: "# Longo prazo",
     EMPTY_TASK: "- [ ] ."
-};
+} as const;
 
 type Tasks = {
     today: string[];
@@ -30,7 +30,6 @@ export default class ToDo_Handler {
         mediumTerm: [],
         longTerm: []
     };
-
     private currentDate: Date = new Date();
 
     constructor(app: App) {
@@ -75,19 +74,19 @@ export default class ToDo_Handler {
         this.currentDate = new Date();
     }
 
-    private isTask(s: string) {
+    private isTask(s: string): boolean {
         return s.startsWith("-");
     }
 
-    private isEmptyTask(s: string) {
+    private isEmptyTask(s: string): boolean {
         return s.startsWith(TEXT.EMPTY_TASK);
     }
 
-    private hasTerm(task: string) {
+    private hasTerm(task: string): boolean {
         return /\b\d{2}\/\d{2}\/\d{2}\b/.test(task);
     }
 
-    private getTerm(task: string) {
+    private getTerm(task: string): [number, number, number] {
         const match = task.match(/(\d{2})\/(\d{2})\/(\d{2})/);
         const intTerm: [number, number, number] = [0, 0, 0];
 
@@ -105,7 +104,6 @@ export default class ToDo_Handler {
 
         return intTerm;
     }
-
 
     private assignTerms(task: string, term: Date) {
         const difference = (term.getTime() - this.currentDate.getTime()) / (1000 * 60 * 60 * 24);
@@ -141,7 +139,7 @@ export default class ToDo_Handler {
         }
     }
 
-    private isCompleted(task: string) {
+    private isCompleted(task: string): boolean {
         return task.startsWith("- [x]");
     }
 
@@ -156,7 +154,7 @@ export default class ToDo_Handler {
         await this.app.vault.modify(file, newContent);
     }
 
-    private updateTerm(content: string, term_text: string, term_list: string[]) {
+    private updateTerm(content: string, term_text: string, term_list: string[]): string {
         content += `${term_text}`;
 
         if (term_list.length == 0)

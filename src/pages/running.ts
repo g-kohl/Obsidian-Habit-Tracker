@@ -34,11 +34,10 @@ type Stats = {
 
 export default class Running_Handler {
     app: App;
-    runs: Run[];
+    runs: Run[] = [];
 
     constructor(app: App) {
         this.app = app;
-        this.runs = [];
     }
 
     async update(file: TFile) {
@@ -62,7 +61,7 @@ export default class Running_Handler {
         }
     }
 
-    private isRun(s: string) {
+    private isRun(s: string): boolean {
         return /^- \d/.test(s);
     }
 
@@ -89,19 +88,6 @@ export default class Running_Handler {
         }
     }
 
-    private createStats(): Stats {
-        return {
-            runs: 0,
-            kms: 0,
-            kmsPerRun: 0,
-            totalTime: "00:00:00",
-            timePerRun: "00:00:00",
-            averagePace: "00:00",
-            longestRun: 0,
-            fastestPace: "00:00"
-        };
-    }
-
     private computeStats(): Stats {
         const stats: Stats = this.createStats();
 
@@ -120,6 +106,25 @@ export default class Running_Handler {
         stats.fastestPace = paces.reduce((best, current) => current < best ? current : best);
 
         return stats;
+    }
+
+    private createStats(): Stats {
+        return {
+            runs: 0,
+            kms: 0,
+            kmsPerRun: 0,
+            totalTime: "00:00:00",
+            timePerRun: "00:00:00",
+            averagePace: "00:00",
+            longestRun: 0,
+            fastestPace: "00:00"
+        };
+    }
+
+    private addTime(time1: string, time2: string): string{
+        const total = this.timeToSeconds(time1) + this.timeToSeconds(time2);
+
+        return this.secondsToTime(total);
     }
 
     private timeToSeconds(time: string): number {
@@ -154,22 +159,17 @@ export default class Running_Handler {
             return `${mm}:${ss}`;
 
         const hh = String(h).padStart(2, "0");
+
         return `${hh}:${mm}:${ss}`;
     }
 
-    private addTime(time1: string, time2: string){
-        const total = this.timeToSeconds(time1) + this.timeToSeconds(time2);
-
-        return this.secondsToTime(total);
-    }
-
-    private getTimePerRun(totalTime: string, runs: number){
+    private getTimePerRun(totalTime: string, runs: number): string{
         const average = Math.floor(this.timeToSeconds(totalTime) / runs);
 
         return this.secondsToTime(average);
     }
 
-    private getAveragePace(totalTime: string, kms: number){
+    private getAveragePace(totalTime: string, kms: number): string{
         const average = Math.floor(this.timeToSeconds(totalTime) / kms);
 
         return this.secondsToTime(average, "MM:SS");

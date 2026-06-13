@@ -55,17 +55,36 @@ A file with the name starting with "NF" will count how many days were marked as 
 - Success/Failure ratio
 
 ## Reading
-A file named "Leituras" will generate statistics based on the books you read. Take notes of the books following this structure:
+A file with the name starting with "Leituras" will generate statistics based on the books you read. Take notes of the books following this structure:
 
 `"TITLE" (AUTHOR): STARTING_DATE - ENDING_DATE: PAGES páginas`
+
+The dates should follow the `DD/MM/YYYY` format.
 
 The statistics are:
 - Total of pages
 - Pages per day on average
 - Pages per book on average
 
-## Other modules...
-To add...
+## Running
+A file with the name starting with "Corridas" will generate statistics based on you running sessions. Take notes of your trainings following this structure:
+
+`DATE | DISTANCE | TIME | PACE | TYPE`
+
+The date should follow the `DD/MM` format.
+The distance should be in Kilometers with four digits (e.g. you run 5km so you write 05,00).
+The time should be in the `HH:MM:SS` format.
+The pace should be in the `MM:SS` format.
+
+The statistics are:
+- Number of runs
+- Total distance
+- Distance per run on average
+- Total time
+- Time per run on average
+- Average pace
+- Longest run
+- Fastest pace
 
 # Developer notes
 
